@@ -8,69 +8,52 @@ export default function BookingForm() {
   const [selectedChair, setSelectedChair] = useState<number | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!date) {
+    if (date) {
+      fetch(`/api/bookings/available?date=${date}`)
+        .then(res => res.json())
+        .then(data => setAvailableChairs(data.available || []))
+        .catch(() => setAvailableChairs([]));
+    } else {
       setAvailableChairs([]);
-      return;
     }
-
-    fetch(`/api/bookings/${date}`)
-      .then((res) => res.json())
-      .then((data) => setAvailableChairs(data.available || []))
-      .catch(() => setAvailableChairs([]));
   }, [date]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setError('');
-    setBookingConfirmed(false);
+    setLoading(true);
 
-    if (!selectedChair || !date) return;
-
-    try {
-      const res = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, chairNumber: selectedChair }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to book');
-      }
-
-      setMessage('Chair booked successfully!');
-      setBookingConfirmed(true);
-    } catch (err: any) {
-      setError(err.message);
+    if (!selectedChair || !date) {
+      setError('Please select a date and chair.');
+      setLoading(false);
+      return;
     }
-  };
 
-  const handleStripePayment = async () => {
     try {
-      const res = await fetch('/api/stripe/checkout', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date, chairNumber: selectedChair }),
       });
 
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Invalid response from server');
+      const data = await res.json();
+
+      if (!res.ok || !data.url) {
+        setError(data.error || 'Failed to start payment');
+        setLoading(false);
+        return;
       }
 
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('Stripe payment failed to initialize.');
-      }
-    } catch (err: any) {
-      setError(err.message);
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('Stripe checkout failed:', err);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,23 +84,11 @@ export default function BookingForm() {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary w-100" disabled={!selectedChair}>
-        Book Chair
+      <button type="submit" className="btn btn-warning w-100" disabled={!selectedChair || loading}>
+        {loading ? 'Processing...' : 'Pay & Book'}
       </button>
 
-      {message && (
-        <div className="alert alert-success mt-3">
-          {message}
-          <button
-            type="button"
-            className="btn btn-warning btn-sm mt-3"
-            onClick={handleStripePayment}
-          >
-            Pay Now
-          </button>
-        </div>
-      )}
-
+      {message && <div className="alert alert-success mt-3">{message}</div>}
       {error && <div className="alert alert-danger mt-3">{error}</div>}
     </form>
   );

@@ -11,13 +11,19 @@ export async function POST(req: NextRequest) {
   }
 
   const { date, chairNumber } = await req.json();
+
   if (!date || !chairNumber) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!baseUrl) {
+    console.error('❌ Missing NEXT_PUBLIC_APP_URL env var');
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+  }
+
   try {
     const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
@@ -31,8 +37,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
+      success_url: `${baseUrl}/booking/success`,
+      cancel_url: `${baseUrl}/booking/cancel`,
       metadata: {
         userId: session.user.id,
         date,

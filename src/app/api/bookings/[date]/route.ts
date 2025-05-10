@@ -4,9 +4,9 @@ import { Booking } from '@/lib/models/Booking';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { date: string } }
+  context: { params: { date: string } }
 ) {
-  const { date } = params;
+  const date = context.params.date;
 
   await connectDB();
 

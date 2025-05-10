@@ -31,14 +31,14 @@ export async function POST(req: NextRequest) {
             currency: 'gbp',
             unit_amount: 100, // $20.00
             product_data: {
-              name: `Chair Booking - Chair ${chairNumber} on ${date}`,
+              name: `Chair Booking - Chair ${chairNumber} on ${date} TCH`,
             },
           },
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/booking/success`,
-      cancel_url: `${baseUrl}/booking/cancel`,
+      success_url: `${baseUrl}/payment/success`,
+      cancel_url: `${baseUrl}/payment/cancel`,
       metadata: {
         userId: session.user.id?.toString() ?? '',
         date,

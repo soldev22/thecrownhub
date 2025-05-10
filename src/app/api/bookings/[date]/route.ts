@@ -2,17 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 
-type Params = {
-  params: {
-    date: string;
-  };
-};
-
 export async function GET(
   req: NextRequest,
-  { params }: Params
-): Promise<NextResponse> {
-  const { date } = params;
+  context: { params: { date: string } }
+) {
+  const date = context.params.date;
 
   await connectDB();
 

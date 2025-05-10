@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import stripe from '@/lib/stripe';
+import type Stripe from 'stripe';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -18,17 +19,17 @@ export async function POST(req: NextRequest) {
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!baseUrl) {
-    console.error('❌ Missing NEXT_PUBLIC_APP_URL env var');
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return NextResponse.json({ error: 'Missing NEXT_PUBLIC_APP_URL' }, { status: 500 });
   }
 
   try {
-    const stripeSession = await stripe.checkout.sessions.create({
+    const params: Stripe.Checkout.SessionCreateParams = {
+      mode: 'payment',
       line_items: [
         {
           price_data: {
             currency: 'gbp',
-            unit_amount: 100,
+            unit_amount: 100, // $20.00
             product_data: {
               name: `Chair Booking - Chair ${chairNumber} on ${date}`,
             },
@@ -36,16 +37,16 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      mode: 'payment',
       success_url: `${baseUrl}/booking/success`,
       cancel_url: `${baseUrl}/booking/cancel`,
       metadata: {
-        userId: session.user.id,
+        userId: session.user.id?.toString() ?? '',
         date,
-        chairNumber,
+        chairNumber: chairNumber.toString(),
       },
-    });
+    };
 
+    const stripeSession = await stripe.checkout.sessions.create(params);
     return NextResponse.json({ url: stripeSession.url });
   } catch (err) {
     console.error('🔥 Stripe session error:', err);

@@ -2,16 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 
-export async function GET(req: NextRequest, context: { params: { date: string } }) {
-  const date = context.params.date;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { date: string } }
+) {
+  const { date } = params;
 
   await connectDB();
-  const bookings = await Booking.find({ date });
 
+  const bookings = await Booking.find({ date });
   const takenChairs = bookings.map((b) => b.chairNumber);
   const allChairs = [1, 2, 3, 4];
-  const available = allChairs.filter((c) => !takenChairs.includes(c));
+  const available = allChairs.filter((n) => !takenChairs.includes(n));
 
   return NextResponse.json({ available });
 }
-

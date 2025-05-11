@@ -9,14 +9,14 @@ type Props = {
 
 export default function Header({ session }: Props) {
   return (
-    <header className="bg-light p-3 border-bottom mb-4">
+    <header className="bg-black text-warning p-3 border-bottom mb-4">
       <div className="container d-flex justify-content-between align-items-center">
         <strong>The Crown Hub – Space Booking</strong>
 
         {session?.user ? (
           <div className="dropdown">
             <button
-              className="btn btn-outline-primary dropdown-toggle btn-sm"
+              className="btn btn-outline-warning dropdown-toggle btn-sm text-warning"
               type="button"
               id="userMenuButton"
               data-bs-toggle="dropdown"
@@ -40,7 +40,7 @@ export default function Header({ session }: Props) {
             </ul>
           </div>
         ) : (
-          <span className="text-muted">Not signed in</span>
+          <span className="text-warning">Not signed in</span>
         )}
       </div>
     </header>

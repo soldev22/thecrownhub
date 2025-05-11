@@ -4,7 +4,11 @@ import { User } from '@/lib/models/User';
 import { hashPassword } from '@/lib/utils/hash';
 
 export async function POST(req: NextRequest) {
-  const { name, email, password } = await req.json();
+  const { name, email, password, mobile, company } = await req.json();
+
+  if (!name || !email || !password || !mobile) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
 
   await connectDB();
 
@@ -19,6 +23,8 @@ export async function POST(req: NextRequest) {
     name,
     email,
     password: hashedPassword,
+    mobile,
+    company: company || '',
   });
 
   return NextResponse.json({ message: 'User registered', userId: newUser._id });

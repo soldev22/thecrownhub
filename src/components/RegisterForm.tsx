@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    company: '',
+    mobile: '',
+  });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
@@ -43,6 +49,23 @@ export default function RegisterForm() {
         placeholder="Name"
         className="form-control mb-2"
         value={form.name}
+        onChange={handleChange}
+        required
+      />
+      <input
+        name="company"
+        type="text"
+        placeholder="Company Name (optional)"
+        className="form-control mb-2"
+        value={form.company}
+        onChange={handleChange}
+      />
+      <input
+        name="mobile"
+        type="tel"
+        placeholder="Mobile Number"
+        className="form-control mb-2"
+        value={form.mobile}
         onChange={handleChange}
         required
       />

@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) return null;
 
         return {
-          id: user._id.toString(), // ✅ this is key to get into token
+          id: user._id.toString(),
           email: user.email,
           name: user.name,
         };
@@ -38,13 +38,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // ✅ make sure it's stored in JWT
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id; // ✅ so we can access it in client
+        session.user.id = token.id as string; // ✅ safe cast for build
       }
       return session;
     },

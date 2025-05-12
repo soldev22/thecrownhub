@@ -16,7 +16,8 @@
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "stripe": "^18.1.0"
+    "stripe": "^18.1.0",
+    "twilio": "^5.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -25,4 +26,3 @@
     "typescript": "^5"
   }
 }
-

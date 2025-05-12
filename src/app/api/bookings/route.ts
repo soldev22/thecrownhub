@@ -2,6 +2,8 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
+import { sendBookingEmails } from '@/lib/notifications';
+import { sendBookingSMS } from '@/lib/sms'; // ✅ New import
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
@@ -27,6 +29,32 @@ export async function POST(req: NextRequest) {
     date,
     chairNumber,
   });
+
+  // ✉️ Send confirmation emails
+  await sendBookingEmails({
+    userEmail: token.email,
+    userName: token.name || 'Customer',
+    date,
+    chairNumber,
+  });
+
+  // 📱 Send SMS to user and manager (if numbers available)
+  await Promise.allSettled([
+    sendBookingSMS({
+      to: process.env.SALON_MANAGER_PHONE!,
+      name: token.name || 'Customer',
+      date,
+      chair: chairNumber,
+    }),
+    token.phone_number
+      ? sendBookingSMS({
+          to: token.phone_number,
+          name: token.name || 'Customer',
+          date,
+          chair: chairNumber,
+        })
+      : Promise.resolve('No user phone number'),
+  ]);
 
   return NextResponse.json({ message: 'Booking saved', bookingId: booking._id });
 }

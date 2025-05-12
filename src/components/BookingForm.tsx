@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tooltip } from 'bootstrap';
 
 export default function BookingForm() {
   const [date, setDate] = useState('');
@@ -13,13 +12,14 @@ export default function BookingForm() {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
+  // ✅ Dynamically load tooltips client-side
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const tooltipTriggerList = Array.from(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
-      );
-      tooltipTriggerList.forEach((tooltipTriggerEl) => {
-        new Tooltip(tooltipTriggerEl);
+      import('bootstrap').then(({ Tooltip }) => {
+        const tooltipTriggerList = Array.from(
+          document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        tooltipTriggerList.forEach((el) => new Tooltip(el));
       });
     }
   }, [availableChairs]);
@@ -88,7 +88,6 @@ export default function BookingForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-4">
-      {/* Date Picker */}
       <input
         type="date"
         className="form-control mb-3"
@@ -98,14 +97,12 @@ export default function BookingForm() {
         required
       />
 
-      {/* Legend */}
       <div className="mb-2 small">
         <span className="badge bg-success me-2">Available</span>
         <span className="badge bg-secondary me-2">Booked</span>
         <span className="badge bg-warning text-dark">Selected</span>
       </div>
 
-      {/* Chair Buttons */}
       <div className="mb-3 d-flex gap-3 flex-wrap">
         {[1, 2, 3, 4].map((num) => {
           const isAvailable = availableChairs.includes(num);
@@ -133,7 +130,6 @@ export default function BookingForm() {
         })}
       </div>
 
-      {/* Dynamic Chair Preview */}
       {selectedChair && (
         <div className="text-center mb-3">
           <img
@@ -147,7 +143,6 @@ export default function BookingForm() {
         </div>
       )}
 
-      {/* Submit */}
       <button
         type="submit"
         className="btn btn-warning w-100"
@@ -156,7 +151,6 @@ export default function BookingForm() {
         {loading ? 'Processing...' : 'Pay & Book'}
       </button>
 
-      {/* Messages */}
       {message && <div className="alert alert-success mt-3">{message}</div>}
       {error && <div className="alert alert-danger mt-3">{error}</div>}
     </form>

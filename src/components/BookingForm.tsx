@@ -57,7 +57,7 @@ export default function BookingForm() {
     }
 
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date, chairNumber: selectedChair }),
@@ -65,14 +65,20 @@ export default function BookingForm() {
 
       const data = await res.json();
 
-      if (!res.ok || data.error) {
-        setError(data.error || 'Booking failed.');
-      } else {
-        setMessage('✅ Booking saved successfully!');
-        sessionStorage.removeItem('bookingDetails');
+      if (!res.ok || !data.url) {
+        setError(data.error || 'Failed to initiate payment.');
+        setLoading(false);
+        return;
       }
+
+      sessionStorage.setItem(
+        'bookingDetails',
+        JSON.stringify({ date, chairNumber: selectedChair })
+      );
+
+      window.location.href = data.url;
     } catch (err) {
-      console.error('Booking failed:', err);
+      console.error('Payment redirect failed:', err);
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -141,7 +147,7 @@ export default function BookingForm() {
         className="btn btn-warning w-100"
         disabled={!selectedChair || loading}
       >
-        {loading ? 'Processing...' : 'Book Chair'}
+        {loading ? 'Processing...' : 'Pay & Book'}
       </button>
 
       {message && <div className="alert alert-success mt-3">{message}</div>}

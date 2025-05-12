@@ -3,13 +3,11 @@ import { getToken } from 'next-auth/jwt';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 
-type Context = {
-  params: { id: string };
-};
-
-export async function DELETE(req: NextRequest, context: Context) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const token = await getToken({ req });
-  const { id } = context.params;
 
   if (!token || !token.sub) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,7 +15,7 @@ export async function DELETE(req: NextRequest, context: Context) {
 
   await connectDB();
 
-  const booking = await Booking.findOne({ _id: id, userId: token.sub });
+  const booking = await Booking.findOne({ _id: params.id, userId: token.sub });
 
   if (!booking) {
     return NextResponse.json({ error: 'Booking not found or not yours' }, { status: 404 });

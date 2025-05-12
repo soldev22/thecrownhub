@@ -10,11 +10,13 @@ export default function BookingForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
   useEffect(() => {
     if (date) {
       fetch(`/api/bookings/available?date=${date}`)
-        .then(res => res.json())
-        .then(data => setAvailableChairs(data.available || []))
+        .then((res) => res.json())
+        .then((data) => setAvailableChairs(data.available || []))
         .catch(() => setAvailableChairs([]));
     } else {
       setAvailableChairs([]);
@@ -33,6 +35,16 @@ export default function BookingForm() {
       return;
     }
 
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setError('You cannot book a date in the past.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -41,16 +53,24 @@ export default function BookingForm() {
       });
 
       const data = await res.json();
+      console.log('🎟️ Stripe checkout response:', data);
 
       if (!res.ok || !data.url) {
-        setError(data.error || 'Failed to start payment');
+        setError(data.error || 'Failed to initiate payment.');
         setLoading(false);
         return;
       }
 
+      // ✅ Store before redirect
+      sessionStorage.setItem(
+        'bookingDetails',
+        JSON.stringify({ date, chairNumber: selectedChair })
+      );
+      console.log('✅ Stored booking details before redirect:', { date, selectedChair });
+
       window.location.href = data.url;
     } catch (err) {
-      console.error('Stripe checkout failed:', err);
+      console.error('Payment redirect failed:', err);
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -64,6 +84,7 @@ export default function BookingForm() {
         className="form-control mb-3"
         value={date}
         onChange={(e) => setDate(e.target.value)}
+        min={todayStr}
         required
       />
 
@@ -74,7 +95,11 @@ export default function BookingForm() {
             <button
               key={num}
               type="button"
-              className={`btn btn-sm ${availableChairs.includes(num) ? 'btn-outline-success' : 'btn-outline-secondary'} ${selectedChair === num ? 'active' : ''}`}
+              className={`btn btn-sm ${
+                availableChairs.includes(num)
+                  ? 'btn-outline-success'
+                  : 'btn-outline-secondary'
+              } ${selectedChair === num ? 'active' : ''}`}
               disabled={!availableChairs.includes(num)}
               onClick={() => setSelectedChair(num)}
             >
@@ -84,7 +109,11 @@ export default function BookingForm() {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-warning w-100" disabled={!selectedChair || loading}>
+      <button
+        type="submit"
+        className="btn btn-warning w-100"
+        disabled={!selectedChair || loading}
+      >
         {loading ? 'Processing...' : 'Pay & Book'}
       </button>
 

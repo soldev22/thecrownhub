@@ -12,9 +12,7 @@ export default function HomePage() {
 async function HomePageContent() {
   const session = await getServerSession(authOptions);
 
-  if (session) {
-    redirect('/dashboard');
-  }
+ 
 
   return (
     <div className="crown-home text-white bg-black py-5 min-vh-100 d-flex flex-column justify-content-start">

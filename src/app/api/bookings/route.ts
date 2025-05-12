@@ -1,39 +1,44 @@
+import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
+  const token = await getToken({ req });
+  if (!token || !token.sub || !token.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { date, chairNumber } = await req.json();
   if (!date || !chairNumber) {
-    return NextResponse.json({ error: 'Missing data' }, { status: 400 });
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   await connectDB();
 
-  const existing = await Booking.findOne({ date, chairNumber });
-  if (existing) {
-    return NextResponse.json({ error: 'Chair already booked' }, { status: 409 });
+  const exists = await Booking.findOne({ date, chairNumber });
+  if (exists) {
+    return NextResponse.json({ error: 'Chair already booked for that date' }, { status: 409 });
   }
 
   const booking = await Booking.create({
-    userId: session.user.id,
+    userId: token.sub,
+    userEmail: token.email,
     date,
     chairNumber,
   });
 
-  return NextResponse.json(booking);
+  return NextResponse.json({ message: 'Booking saved', bookingId: booking._id });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const token = await getToken({ req });
+
+  if (!token || !token.sub) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   await connectDB();
-  const bookings = await Booking.find();
+  const bookings = await Booking.find({ userId: token.sub }).sort({ date: 1 });
   return NextResponse.json(bookings);
 }

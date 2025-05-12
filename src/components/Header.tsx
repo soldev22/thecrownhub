@@ -11,8 +11,9 @@ export default function Header({ session }: Props) {
   return (
     <header className="bg-black text-warning p-3 border-bottom mb-4">
       <div className="container d-flex justify-content-between align-items-center">
-        <strong>The Crown Hub – Space Booking</strong>
-
+       <Link href="/" className="text-warning text-decoration-none fw-bold">
+  TheCrownHub
+</Link>
         {session?.user ? (
           <div className="dropdown">
             <button

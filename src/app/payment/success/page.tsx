@@ -1,13 +1,43 @@
-export default function PaymentSuccessPage() {
-  return (
-    <div className="text-center py-5">
-      <h1 className="text-success display-5">🎉 Payment Successful!</h1>
-      <p className="lead mt-3">Thank you for booking with <strong>The Crown Hub</strong>.</p>
-      <p>Your chair is now secured and paid for.</p>
+'use client';
 
-      <a href="/dashboard" className="btn btn-outline-primary mt-4">
-        Go to Dashboard
-      </a>
+import { useEffect, useState } from 'react';
+
+export default function PaymentSuccess() {
+  const [status, setStatus] = useState('Saving your booking...');
+
+  useEffect(() => {
+    const booking = sessionStorage.getItem('bookingDetails');
+    if (!booking) {
+      setStatus('Booking info not found.');
+      console.log('🏁 useEffect started');
+      return;
+    }
+
+    const { date, chairNumber } = JSON.parse(booking);
+
+    fetch('/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, chairNumber }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data || data.error) {
+          setStatus('❌ Booking failed: ' + (data.error || 'Unknown error'));
+        } else {
+          setStatus('✅ Booking saved successfully!');
+          sessionStorage.removeItem('bookingDetails');
+        }
+      })
+      .catch(() => setStatus('❌ Booking request failed.'));
+  }, []);
+
+  return (
+    <div className="container text-center text-white py-5">
+      <h2>Payment Successful</h2>
+      <p>{status}</p>
     </div>
   );
+  console.log('✅ PaymentSuccess component mounted');
+
 }

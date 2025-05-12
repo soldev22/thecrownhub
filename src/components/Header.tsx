@@ -1,20 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
-type Props = {
-  session: any;
-};
+export default function Header() {
+  const { data: session, status } = useSession();
 
-export default function Header({ session }: Props) {
   return (
     <header className="bg-black text-warning p-3 border-bottom mb-4">
       <div className="container d-flex justify-content-between align-items-center">
-       <Link href="/" className="text-warning text-decoration-none fw-bold">
-  TheCrownHub
-</Link>
-        {session?.user ? (
+        <Link href="/" className="text-warning text-decoration-none fw-bold">
+          TheCrownHub
+        </Link>
+
+        {status === 'loading' ? (
+          <span className="text-warning">Loading...</span>
+        ) : session?.user ? (
           <div className="dropdown">
             <button
               className="btn btn-outline-warning dropdown-toggle btn-sm text-warning"
@@ -41,7 +42,7 @@ export default function Header({ session }: Props) {
             </ul>
           </div>
         ) : (
-          <span className="text-warning">Not signed in</span>
+          <Link href="/login" className="btn btn-outline-warning btn-sm">Log in</Link>
         )}
       </div>
     </header>

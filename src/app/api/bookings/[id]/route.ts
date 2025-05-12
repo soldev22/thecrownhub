@@ -3,11 +3,15 @@ import { getToken } from 'next-auth/jwt';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 
+// 👇 import this to satisfy Vercel's strict type check
+import type { RouteHandlerContext } from 'next/dist/server/web/types';
+
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteHandlerContext
 ) {
   const token = await getToken({ req });
+  const id = context.params?.id;
 
   if (!token || !token.sub) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,7 +19,7 @@ export async function DELETE(
 
   await connectDB();
 
-  const booking = await Booking.findOne({ _id: params.id, userId: token.sub });
+  const booking = await Booking.findOne({ _id: id, userId: token.sub });
 
   if (!booking) {
     return NextResponse.json({ error: 'Booking not found or not yours' }, { status: 404 });

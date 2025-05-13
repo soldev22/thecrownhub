@@ -4,7 +4,7 @@ import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 import { User } from '@/lib/models/User';
 import { sendBookingEmails } from '@/lib/notifications';
-import { sendBookingSMS } from '@/lib/sms';
+import { sendSMS } from '@/lib/sms'; // ✅ Re-added SMS
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
@@ -40,22 +40,24 @@ export async function POST(req: NextRequest) {
     chairNumber,
   });
 
-  await Promise.allSettled([
-    sendBookingSMS({
-      to: process.env.SALON_MANAGER_PHONE!,
-      name: user?.name || 'Customer',
-      date,
-      chair: chairNumber,
-    }),
-    user?.mobile
-      ? sendBookingSMS({
-          to: user.mobile,
-          name: user.name || 'Customer',
-          date,
-          chair: chairNumber,
-        })
-      : Promise.resolve('No user mobile found'),
-  ]);
+  // ✅ Send SMS to customer
+// Format UK number to international format
+const cleanedMobile = user.mobile.replace(/^0/, ''); // Strip leading 0
+const internationalNumber = `+44${cleanedMobile}`;
+
+await sendSMS({
+  to: internationalNumber,
+  message: `💈 Hi ${user.name || 'there'}, your booking for Chair ${chairNumber} on ${date} is confirmed. - CrownHub`,
+});
+
+
+  /* ✅ Optional: Notify salon manager
+  if (process.env.SALON_MANAGER_PHONE) {
+    await sendSMS({
+      to: process.env.SALON_MANAGER_PHONE,
+      message: `📅 New booking: ${user?.name || 'Customer'} booked Chair ${chairNumber} on ${date}.`,
+    });
+  }*/
 
   return NextResponse.json({ message: 'Booking saved', bookingId: booking._id });
 }

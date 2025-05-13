@@ -33,11 +33,11 @@ export default function PaymentSuccess() {
   }, []);
 
   return (
-    <div className="container text-center text-white py-5">
-      <h2>Payment Successful</h2>
-      <p>{status}</p>
+    <div className="d-flex align-items-center justify-content-center bg-dark text-white vh-100">
+      <div className="text-center">
+        <h2 className="mb-4">Payment Successful</h2>
+        <p className="lead">{status}</p>
+      </div>
     </div>
   );
-  console.log('✅ PaymentSuccess component mounted');
-
 }

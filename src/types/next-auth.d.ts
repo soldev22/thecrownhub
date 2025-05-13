@@ -1,18 +1,14 @@
-import NextAuth from 'next-auth';
+// types/next-auth.d.ts
+import NextAuth from "next-auth";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      id?: string; // 👈 ADD THIS
+      id?: string;
+      phone?: string; // ← Add this
     };
-  }
-
-  interface User {
-    id: string;
-    name: string;
-    email: string;
   }
 }

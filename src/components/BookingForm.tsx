@@ -60,7 +60,7 @@ export default function BookingForm() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, chairNumber: selectedChair }),
+        body: JSON.stringify({ type: 'chair', date, chairNumber: selectedChair }),
       });
 
       const data = await res.json();
@@ -71,11 +71,17 @@ export default function BookingForm() {
         return;
       }
 
+      // 💾 Store booking info for success page
       sessionStorage.setItem(
         'bookingDetails',
-        JSON.stringify({ date, chairNumber: selectedChair })
+        JSON.stringify({
+          type: 'chair',
+          date,
+          chairNumber: selectedChair,
+        })
       );
 
+      // ✅ Redirect in same tab
       window.location.href = data.url;
     } catch (err) {
       console.error('Payment redirect failed:', err);

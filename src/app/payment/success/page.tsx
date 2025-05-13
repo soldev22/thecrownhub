@@ -9,27 +9,46 @@ export default function PaymentSuccess() {
     const booking = sessionStorage.getItem('bookingDetails');
     if (!booking) {
       setStatus('Booking info not found.');
-      console.log('🏁 useEffect started');
       return;
     }
 
-    const { date, chairNumber } = JSON.parse(booking);
+    const parsed = JSON.parse(booking);
+    const { type, date, chairNumber, hours } = parsed;
 
-    fetch('/api/bookings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, chairNumber }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data || data.error) {
-          setStatus('❌ Booking failed: ' + (data.error || 'Unknown error'));
-        } else {
-          setStatus('✅ Booking saved successfully!');
-          sessionStorage.removeItem('bookingDetails');
-        }
+    if (!date || !type) {
+      setStatus('Booking data incomplete.');
+      return;
+    }
+
+    // Chair Booking
+    if (type === 'chair') {
+      fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, chairNumber }),
       })
-      .catch(() => setStatus('❌ Booking request failed.'));
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data || data.error) {
+            setStatus('❌ Chair booking failed: ' + (data.error || 'Unknown error'));
+          } else {
+            setStatus('✅ Chair booking saved successfully!');
+            sessionStorage.removeItem('bookingDetails');
+          }
+        })
+        .catch(() => setStatus('❌ Chair booking request failed.'));
+    }
+
+    // Pop-Up Booking
+    else if (type === 'popup') {
+      // You’ve already saved each individual hour in the booking step
+      setStatus(`✅ Pop-Up space booked successfully for ${hours} hour(s) on ${date}.`);
+      sessionStorage.removeItem('bookingDetails');
+    }
+
+    else {
+      setStatus('❌ Unknown booking type.');
+    }
   }, []);
 
   return (

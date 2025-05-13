@@ -11,11 +11,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { date, chairNumber } = await req.json();
-
-  if (!date || !chairNumber) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  }
+  const body = await req.json();
+  const { type, date, chairNumber, hours, amount } = body;
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!baseUrl) {
@@ -23,28 +20,67 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const params: Stripe.Checkout.SessionCreateParams = {
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'gbp',
-            unit_amount: 50, // £15.00 in pence
-            product_data: {
-              name: `Chair Booking – Chair ${chairNumber} on ${date} (The Crown Hub)`,
+    let params: Stripe.Checkout.SessionCreateParams;
+
+    if (type === 'popup') {
+      if (!date || !hours || !amount) {
+        return NextResponse.json({ error: 'Missing fields for pop-up booking' }, { status: 400 });
+      }
+
+      params = {
+        mode: 'payment',
+        line_items: [
+          {
+            price_data: {
+              currency: 'gbp',
+              unit_amount: amount, // total in pence (e.g. 3000 for £30)
+              product_data: {
+                name: `Pop-Up Booking – ${hours} hour(s) on ${date} (The Crown Hub)`,
+              },
             },
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        success_url: `${baseUrl}/payment/success`,
+        cancel_url: `${baseUrl}/payment/cancel`,
+        metadata: {
+          userId: session.user.id?.toString() ?? '',
+          date,
+          hours: hours.toString(),
+          bookingType: 'popup',
         },
-      ],
-      success_url: `${baseUrl}/payment/success`,
-      cancel_url: `${baseUrl}/payment/cancel`,
-      metadata: {
-        userId: session.user.id?.toString() ?? '',
-        date,
-        chairNumber: chairNumber.toString(),
-      },
-    };
+      };
+    } else if (type === 'chair') {
+      if (!date || !chairNumber) {
+        return NextResponse.json({ error: 'Missing fields for chair booking' }, { status: 400 });
+      }
+
+      params = {
+        mode: 'payment',
+        line_items: [
+          {
+            price_data: {
+              currency: 'gbp',
+              unit_amount: 50, // £15 per day
+              product_data: {
+                name: `Chair Booking – Chair ${chairNumber} on ${date} (The Crown Hub)`,
+              },
+            },
+            quantity: 1,
+          },
+        ],
+        success_url: `${baseUrl}/payment/success`,
+        cancel_url: `${baseUrl}/payment/cancel`,
+        metadata: {
+          userId: session.user.id?.toString() ?? '',
+          date,
+          chairNumber: chairNumber.toString(),
+          bookingType: 'chair',
+        },
+      };
+    } else {
+      return NextResponse.json({ error: 'Invalid booking type' }, { status: 400 });
+    }
 
     const stripeSession = await stripe.checkout.sessions.create(params);
     return NextResponse.json({ url: stripeSession.url });

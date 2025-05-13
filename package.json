@@ -12,10 +12,12 @@
     "@vonage/server-sdk": "^3.21.0",
     "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.6",
+    "date-fns": "^4.1.0",
     "mongoose": "^8.14.2",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
+    "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
     "stripe": "^18.1.0",
     "twilio": "^5.6.0"

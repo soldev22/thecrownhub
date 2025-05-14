@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Booking } from '@/lib/models/Booking';
 import { User } from '@/lib/models/User';
-import { sendBookingEmails } from '@/lib/notifications';
+import { sendChairBookingEmail } from '@/lib/notifications';
 import { sendSMS } from '@/lib/sms'; // ✅ Re-added SMS
 
 export async function POST(req: NextRequest) {
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const user = await User.findOne({ email: token.email });
 
-  await sendBookingEmails({
+  await sendChairBookingEmail({
     userEmail: token.email,
     userName: user?.name || 'Customer',
     date,

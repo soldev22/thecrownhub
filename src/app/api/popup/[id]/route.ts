@@ -2,17 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { PopupBooking } from '@/lib/models/PopupBooking';
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
-
-export async function DELETE(req: NextRequest, context: Context) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     await connectDB();
 
-    const { id } = context.params;
+    const { id } = params;
 
     const deleted = await PopupBooking.findByIdAndDelete(id);
 

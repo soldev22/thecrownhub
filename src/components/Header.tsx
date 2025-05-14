@@ -27,13 +27,24 @@ export default function Header() {
               {session.user.name || session.user.email}
             </button>
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
+              <li><h6 className="dropdown-header">Chair Bookings</h6></li>
               <li>
-                <Link className="dropdown-item" href="/booking">Make a Booking</Link>
+                <Link className="dropdown-item" href="/booking">New Chair Booking</Link>
               </li>
               <li>
-                <Link className="dropdown-item" href="/booking/history">Booking History</Link>
+                <Link className="dropdown-item" href="/booking/history">Chair Booking History</Link>
               </li>
               <li><hr className="dropdown-divider" /></li>
+
+              <li><h6 className="dropdown-header">Pop-Up Space</h6></li>
+              <li>
+                <Link className="dropdown-item" href="/popup">Book Pop-Up Slot</Link>
+              </li>
+              <li>
+                <Link className="dropdown-item" href="/popup/history">Pop-Up Booking History</Link>
+              </li>
+              <li><hr className="dropdown-divider" /></li>
+
               <li>
                 <button className="dropdown-item text-danger" onClick={() => signOut({ callbackUrl: '/' })}>
                   Log out

@@ -9,6 +9,7 @@ export default function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -18,6 +19,7 @@ export default function AuthForm() {
     setEmail('');
     setPassword('');
     setName('');
+    setMobile('');
     setError('');
   };
 
@@ -28,8 +30,12 @@ export default function AuthForm() {
 
     try {
       if (isRegistering) {
+        if (!mobile.match(/^\+?\d{10,15}$/)) {
+          throw new Error('Please enter a valid mobile number (with country code)');
+        }
+
         // Register first
-        await axios.post('/api/users/register', { email, password, name });
+        await axios.post('/api/users/register', { email, password, name, mobile });
 
         // Auto-login after successful registration
         const res = await signIn('credentials', {
@@ -72,14 +78,24 @@ export default function AuthForm() {
         <h2 className="text-center mb-3">{isRegistering ? 'Register' : 'Log In'}</h2>
 
         {isRegistering && (
-          <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Your Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <>
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <input
+              type="tel"
+              className="form-control mb-2"
+              placeholder="Mobile Number (e.g. +447911123456)"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              required
+            />
+          </>
         )}
 
         <input
@@ -101,7 +117,13 @@ export default function AuthForm() {
         />
 
         <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-          {loading ? (isRegistering ? 'Registering...' : 'Logging in...') : isRegistering ? 'Register' : 'Log In'}
+          {loading
+            ? isRegistering
+              ? 'Registering...'
+              : 'Logging in...'
+            : isRegistering
+            ? 'Register'
+            : 'Log In'}
         </button>
 
         {error && <div className="text-danger mt-2">{error}</div>}

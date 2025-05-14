@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
           {
             price_data: {
               currency: 'gbp',
-              unit_amount: 50, // £15 per day
+              unit_amount: 1500, // £15 per day
               product_data: {
                 name: `Chair Booking – Chair ${chairNumber} on ${date} (The Crown Hub)`,
               },

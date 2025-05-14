@@ -72,9 +72,10 @@ export default function BookingFormPopup() {
     const totalCost = selectedHours.length * 1;
 
     try {
-      for (const hour of selectedHours) {
-        await axios.post('/api/popup', { date: formattedDate, hour });
-      }
+      await axios.post('/api/popup', {
+  date: formattedDate,
+  hours: selectedHours,
+});
 
       // 💾 Store booking info for success page
       sessionStorage.setItem(
@@ -92,7 +93,7 @@ export default function BookingFormPopup() {
         type: 'popup',
         date: formattedDate,
         hours: selectedHours.length,
-        amount: totalCost * 100, // in pence
+        amount: totalCost * 1000, // in pence
       });
 
       if (stripeRes.data?.url) {

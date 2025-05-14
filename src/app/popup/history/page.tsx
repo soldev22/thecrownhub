@@ -6,7 +6,7 @@ import axios from 'axios';
 type PopupBooking = {
   _id: string;
   date: string;
-  hour: number;
+  hours: number[];
 };
 
 export default function PopupHistoryPage() {
@@ -18,7 +18,14 @@ export default function PopupHistoryPage() {
     setLoading(true);
     try {
       const res = await axios.get('/api/popup/my-bookings');
-      setBookings(res.data.bookings);
+      const sorted: PopupBooking[] = res.data.bookings
+        .map((b: PopupBooking) => ({
+          ...b,
+          hours: b.hours.sort((a: number, b: number) => a - b),
+        }))
+        .sort((a: PopupBooking, b: PopupBooking) => b.date.localeCompare(a.date)); // newest first
+
+      setBookings(sorted);
     } catch (err: any) {
       setMessage('❌ Failed to load bookings.');
     } finally {
@@ -30,13 +37,21 @@ export default function PopupHistoryPage() {
     fetchBookings();
   }, []);
 
-  const cancelBooking = async (id: string) => {
-    if (!confirm('Cancel this booking?')) return;
+  const cancelBooking = async (bookingId: string, hour: number) => {
+    if (!confirm(`Cancel ${hour}:00 on this day?`)) return;
 
     try {
-      await axios.delete(`/api/popup/${id}`);
-      setBookings(prev => prev.filter(b => b._id !== id));
-      setMessage('✅ Booking cancelled.');
+      await axios.delete(`/api/popup/${bookingId}?hour=${hour}`);
+      setBookings(prev =>
+        prev
+          .map(b => {
+            if (b._id !== bookingId) return b;
+            const newHours = b.hours.filter(h => h !== hour);
+            return { ...b, hours: newHours };
+          })
+          .filter(b => b.hours.length > 0)
+      );
+      setMessage(`✅ Booking cancelled for ${hour}:00.`);
     } catch (err: any) {
       setMessage('❌ Cancellation failed.');
     }
@@ -57,22 +72,25 @@ export default function PopupHistoryPage() {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Hour</th>
-              <th></th>
+              <th>Booked Hours</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {bookings.map(b => (
               <tr key={b._id}>
                 <td>{b.date}</td>
-                <td>{b.hour}:00</td>
+                <td>{b.hours.map(hour => `${hour}:00`).join(', ')}</td>
                 <td>
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => cancelBooking(b._id)}
-                  >
-                    Cancel
-                  </button>
+                  {b.hours.map(hour => (
+                    <button
+                      key={hour}
+                      className="btn btn-sm btn-outline-danger me-2 mb-1"
+                      onClick={() => cancelBooking(b._id, hour)}
+                    >
+                      Cancel {hour}:00
+                    </button>
+                  ))}
                 </td>
               </tr>
             ))}

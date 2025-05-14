@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
+// lib/models/PopupBooking.ts
+import mongoose from 'mongoose';
 
-const popupBookingSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+const PopupBookingSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   date: { type: String, required: true }, // Format: YYYY-MM-DD
-  hour: { type: Number, required: true }, // 0–23
-  createdAt: { type: Date, default: Date.now },
-});
+  hours: [{ type: Number, min: 8, max: 18 }],
+}, { timestamps: true });
 
-popupBookingSchema.index({ date: 1, hour: 1 });
+PopupBookingSchema.index({ userId: 1, date: 1 }, { unique: true });
 
-export const PopupBooking =
-  mongoose.models.PopupBooking || mongoose.model("PopupBooking", popupBookingSchema);
+export const PopupBooking = mongoose.models.PopupBooking || mongoose.model('PopupBooking', PopupBookingSchema);

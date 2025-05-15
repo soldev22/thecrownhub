@@ -1,60 +1,60 @@
-export default function PopupInfoPage() {
+'use client';
+
+import Link from 'next/link';
+
+export default function LandingPage() {
   return (
-    <div className="container py-5">
-      <h1 className="mb-4 text-center text-warning">Pop-Up Space Details</h1>
-
-      <div className="mb-4">
-        <p className="lead">
-          Welcome to The Crown Hub's pop-up space — ideal for small businesses, local makers, creatives,
-          and anyone looking to showcase their work in a high-footfall, vibrant environment.
-        </p>
-      </div>
-
-      <div className="row g-3 mb-5">
-        <div className="col-md-4">
-          <img
-            src="/images/popup1.jpg"
-            alt="Pop-up stall with handmade goods"
-            className="img-fluid rounded shadow-sm"
-          />
+    <main className="bg-black text-white">
+      {/* Jump Menu */}
+      <nav className="bg-warning text-dark py-2 sticky-top z-3">
+        <div className="container d-flex justify-content-around fw-bold">
+          <a href="#chair" className="text-dark text-decoration-none">Chair Hire</a>
+          <a href="#popup" className="text-dark text-decoration-none">Pop-Up Space</a>
         </div>
-        <div className="col-md-4">
-          <img
-            src="/images/popup2.jpg"
-            alt="Event setup with lighting and banners"
-            className="img-fluid rounded shadow-sm"
-          />
+      </nav>
+
+      {/* Chair Hire Section */}
+      <section id="chair" className="py-5 border-bottom border-warning">
+        <div className="container text-center">
+          <h2 className="display-5 fw-bold mb-3 text-warning">Chair Hire</h2>
+          <p className="lead mb-4">
+            Ready to grow your brand in a professional, stylish space? Hire your chair for just <strong>£15/day</strong>.
+            No contracts. No hassle. Just you, your clients, and total flexibility.
+          </p>
+
+          {/* Promo Video */}
+          <div className="ratio ratio-16x9 mb-4" style={{ maxWidth: '720px', margin: '0 auto' }}>
+            <video
+              controls
+              poster="/TheCrownHubLogo.png"
+              className="w-100 rounded shadow"
+            >
+              <source src="/TheCrownHubPromo_FinalSlower.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <Link href="/booking" className="btn btn-warning btn-lg text-dark">Book a Chair</Link>
         </div>
-        <div className="col-md-4">
-          <img
-            src="/images/popup3.jpg"
-            alt="Small art gallery or boutique-style layout"
-            className="img-fluid rounded shadow-sm"
-          />
+      </section>
+
+      {/* Pop-Up Section */}
+      <section id="popup" className="py-5">
+        <div className="container text-center">
+          <h2 className="display-5 fw-bold mb-3 text-warning">Pop-Up Space</h2>
+          <p className="lead mb-4">
+            Planning a product launch, art show, or private event? Our pop-up space gives you room to shine.
+            Book by the hour, host up to <strong>40 guests</strong>, and wow your audience.
+          </p>
+
+          {/* Placeholder for second video */}
+          <div className="ratio ratio-16x9 mb-4 bg-secondary d-flex align-items-center justify-content-center rounded">
+            <span className="text-white-50">[ Pop-Up Space Video Coming Soon ]</span>
+          </div>
+
+          <Link href="/popup" className="btn btn-warning btn-lg text-dark">Book a Pop-Up Space</Link>
         </div>
-      </div>
-
-      <h3 className="text-warning">What's Included:</h3>
-      <ul>
-        <li>Flexible booking by the hour (8am–6pm)</li>
-        <li>Up to 3 vendors per hour slot</li>
-        <li>Electricity, Wi-Fi, and signage space available</li>
-        <li>No contracts — just pay-as-you-go</li>
-      </ul>
-
-      <h3 className="text-warning mt-4">Recommended For:</h3>
-      <ul>
-        <li>Market traders</li>
-        <li>Food and drink tastings</li>
-        <li>Workshops or demos</li>
-        <li>Local artists and creators</li>
-      </ul>
-
-      <div className="text-center mt-5">
-        <a href="/popup" className="btn btn-warning btn-lg">
-          Book a Slot Now
-        </a>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

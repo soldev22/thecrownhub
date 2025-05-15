@@ -8,17 +8,34 @@ export default function Header() {
 
   return (
     <header className="bg-black text-warning p-3 border-bottom mb-4">
-      <div className="container d-flex justify-content-between align-items-center">
-        <Link href="/" className="text-warning text-decoration-none fw-bold">
+      <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        {/* Logo / Home */}
+        <Link href="/" className="text-warning text-decoration-none fw-bold fs-4">
           TheCrownHub
         </Link>
 
+        {/* Info / Contact Links */}
+        <nav className="d-flex flex-wrap gap-2 align-items-center fw-bold">
+          <Link href="/popup/info" className="text-warning text-decoration-none">
+            Have a Look Around
+          </Link>
+          <span className="text-warning">|</span>
+          <a href="mailto:mike@solutionsdeveloped.co.uk" className="text-warning text-decoration-none">
+            Email Us
+          </a>
+          <span className="text-warning">|</span>
+          <a href="sms:+447739870670" className="text-warning text-decoration-none">
+            Send SMS
+          </a>
+        </nav>
+
+        {/* Auth Links */}
         {status === 'loading' ? (
-          <span className="text-warning">Loading...</span>
+          <span className="text-warning fw-bold">Loading...</span>
         ) : session?.user ? (
           <div className="dropdown">
             <button
-              className="btn btn-outline-warning dropdown-toggle btn-sm text-warning"
+              className="btn btn-outline-warning dropdown-toggle btn-sm text-warning fw-bold"
               type="button"
               id="userMenuButton"
               data-bs-toggle="dropdown"
@@ -53,7 +70,7 @@ export default function Header() {
             </ul>
           </div>
         ) : (
-          <Link href="/login" className="btn btn-outline-warning btn-sm">Log in</Link>
+          <Link href="/login" className="btn btn-outline-warning btn-sm fw-bold">Log in</Link>
         )}
       </div>
     </header>

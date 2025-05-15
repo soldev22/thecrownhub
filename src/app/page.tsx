@@ -17,30 +17,20 @@ export default async function HomePage() {
           Welcome to <span className="display-4">The</span>Crown<span className="display-4">Hub</span>
         </h1>
         <p className="lead mb-4">
-          Book your professional hairdressing chair — by the day, on your schedule.
+          Your space to shine — whether you’re styling clients or hosting a standout event.
         </p>
         <p>
-          Flexible, affordable, stylish spaces for independent hair artists. <br />Choose your chair, pick your day(s), and start growing your business.
+          Rent a premium hairdressing chair with zero commitment and complete flexibility. Perfect for freelance stylists ready to grow their brand on their own terms. Need something bigger? Our pop-up event space is ready to impress — host up to <strong>40 guests</strong> with catering facilities, a waiting lounge, and a sleek, professional vibe. <br />
+          No contracts. No fuss. Just space that works for you.
         </p>
 
         {/* CTA Buttons */}
-        <div className="d-grid gap-2 d-sm-flex justify-content-sm-center mt-5">
-          <Link href="/register" className="btn btn-outline-light btn-lg px-4 me-sm-3">
-            Join Now
-          </Link>
+        <div className="d-grid gap-3 d-sm-flex justify-content-sm-center mt-5">
           <Link href="/login" className="btn btn-warning btn-lg px-4 text-dark">
             Book a Chair
           </Link>
-        </div>
-
-        {/* 💥 Pop-Up Event Space Promo Block */}
-        <div className="bg-light text-dark p-4 rounded mt-5 shadow-lg">
-          <h2 className="fw-bold mb-3">Looking for a Stunning Pop-Up Event Space?</h2>
-          <p className="mb-3">
-            Our dedicated event area comfortably hosts up to <strong>40 guests</strong>, includes a catering section and a waiting area. Perfect for launches, exhibits, and private bookings.
-          </p>
-          <Link href="/popup" className="btn btn-dark btn-lg">
-            Book the Event Space Now
+          <Link href="/popup" className="btn btn-warning btn-lg px-4 text-dark">
+            Book a Pop-Up Space
           </Link>
         </div>
       </div>

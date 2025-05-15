@@ -10,6 +10,7 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -20,6 +21,7 @@ export default function AuthForm() {
     setPassword('');
     setName('');
     setMobile('');
+    setCompanyName('');
     setError('');
   };
 
@@ -34,10 +36,14 @@ export default function AuthForm() {
           throw new Error('Please enter a valid mobile number (with country code)');
         }
 
-        // Register first
-        await axios.post('/api/users/register', { email, password, name, mobile });
+        await axios.post('/api/users/register', {
+          email,
+          password,
+          name,
+          mobile,
+          companyName, // <-- Include company name in request
+        });
 
-        // Auto-login after successful registration
         const res = await signIn('credentials', {
           redirect: false,
           email,
@@ -51,7 +57,6 @@ export default function AuthForm() {
 
         router.push(res?.url || '/dashboard');
       } else {
-        // Login only
         const res = await signIn('credentials', {
           redirect: false,
           email,
@@ -94,6 +99,13 @@ export default function AuthForm() {
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               required
+            />
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="Company Name (optional)"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
           </>
         )}

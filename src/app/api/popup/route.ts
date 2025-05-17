@@ -44,21 +44,27 @@ export async function POST(req: NextRequest) {
 
   let userBooking = await PopupBooking.findOne({ userId: token.sub, date });
 
-  if (!userBooking) {
-    // CREATE new booking
-    userBooking = await PopupBooking.create({
-      userId: token.sub,
-      date,
-      hours
-    });
-  } else {
-    // UPDATE booking with new hours if needed
-    const newHours = hours.filter(h => !userBooking.hours.includes(h));
-    if (newHours.length > 0) {
-      userBooking.hours.push(...newHours);
-      await userBooking.save();
-    }
+if (!userBooking) {
+  // CREATE new booking with name/email stored
+  userBooking = await PopupBooking.create({
+    userId: token.sub,
+    userName: user.name,
+    userEmail: user.email,
+    date,
+    hours,
+  });
+} else{
+  // UPDATE booking with new hours and patch missing userName/email
+  userBooking.userName = user.name;
+  userBooking.userEmail = user.email;
+
+  const newHours = hours.filter(h => !userBooking.hours.includes(h));
+  if (newHours.length > 0) {
+    userBooking.hours.push(...newHours);
   }
+
+  await userBooking.save();
+}
 
   // Send SMS confirmation
   const hourList = hours.map(h => `${h}:00`).join(', ');

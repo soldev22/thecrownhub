@@ -6,32 +6,58 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="crown-home text-white bg-black py-5 min-vh-100 d-flex flex-column justify-content-start">
+    <div className="crown-home text-white bg-dark py-5 min-vh-100 d-flex flex-column justify-content-start">
       {/* 🔔 Offer Banner */}
-      <div className="bg-warning text-dark text-center py-2">
-        <strong>Special Offer:</strong> Register now to lock in an introductory rate of <strong>£15.00 per day</strong> — guaranteed for 6 months!
+      <div className="bg-light text-dark text-center py-3 shadow-sm border-bottom border-warning">
+        <h2 className="display-5 fw-bold mb-0">
+          Chair Hire: <span className="text-primary">£15/day</span> &nbsp;&bull;&nbsp; Pop-Up Space: <span className="text-primary">£10/hour</span>
+        </h2>
+        <p className="mb-0 small fst-italic">Simple. Flexible. No contracts. Guaranteed rates for 6 months.</p>
       </div>
 
-      <div className="container text-center flex-grow-1 d-flex flex-column justify-content-center">
-        <h1 className="display-4 fw-bold mb-3">
-          Welcome to <span className="display-4">The</span>Crown<span className="display-4">Hub</span>
+      {/* Main Content */}
+      <div className="container flex-grow-1 d-flex flex-column justify-content-center mt-5">
+        <h1 className="display-4 text-center fw-bold mb-4">
+          Welcome to <span className="text-primary">The Crown Hub</span>
         </h1>
-        <p className="lead mb-4">
-          Your space to shine — whether you’re styling clients or hosting a standout event.
-        </p>
-        <p>
-          Rent a premium hairdressing chair with zero commitment and complete flexibility. Perfect for freelance stylists ready to grow their brand on their own terms. Need something bigger? Our pop-up event space is ready to impress — host up to <strong>40 guests</strong> with catering facilities, a waiting lounge, and a sleek, professional vibe. <br />
-          No contracts. No fuss. Just space that works for you.
+        <p className="lead text-center mb-5">
+          A premium, flexible co-working space for hairstylists and creatives. Book what you need — when you need it.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="d-grid gap-3 d-sm-flex justify-content-sm-center mt-5">
-          <Link href="/login" className="btn btn-warning btn-lg px-4 text-dark">
-            Book a Chair
-          </Link>
-          <Link href="/popup" className="btn btn-warning btn-lg px-4 text-dark">
-            Book a Pop-Up Space
-          </Link>
+        {/* Services Side-by-Side */}
+        <div className="row g-4">
+          {/* Chair Hire */}
+          <div className="col-md-6">
+            <div className="bg-secondary p-4 rounded-4 shadow-sm h-100">
+              <h3 className="text-warning fw-bold">Hairdressing Chair Hire</h3>
+              <p className="mt-2">
+                Rent a professional salon chair for just <strong className="text-primary">£15/day</strong>. 
+                Perfect for freelance stylists — zero commitment, total flexibility.
+              </p>
+              <ul className="small">
+                <li>No contracts</li>
+                <li>Modern, stylish salon space</li>
+                <li>Use your own branding</li>
+              </ul>
+              <Link href="/login" className="btn btn-outline-light mt-3">Book a Chair</Link>
+            </div>
+          </div>
+
+          {/* Pop-Up Space */}
+          <div className="col-md-6">
+            <div className="bg-secondary p-4 rounded-4 shadow-sm h-100">
+              <h3 className="text-warning fw-bold">Pop-Up Event Space</h3>
+              <p className="mt-2">
+                Host events, workshops or product launches — book by the hour from just <strong className="text-primary">£10/hour</strong>.
+              </p>
+              <ul className="small">
+                <li>Up to 40 guests</li>
+                <li>Catering space & lounge</li>
+                <li>Ideal for beauty demos, education, or launches</li>
+              </ul>
+              <Link href="/popup" className="btn btn-outline-warning mt-3">Book Pop-Up Space</Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
